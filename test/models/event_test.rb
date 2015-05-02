@@ -4,7 +4,7 @@
 #
 #  id            :integer          not null, primary key
 #  event_type_id :integer
-#  completed     :boolean
+#  completed     :boolean          default(FALSE)
 #  text          :string(255)
 #  time          :datetime
 #  user_id       :integer

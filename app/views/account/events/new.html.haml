@@ -1,1 +1,5 @@
+- if current_user.over_limit?
+  .alert.alert-danger 
+    You are over your limit and update to create anymore events. Please upgrade to a higher plan.
+    
 = render 'form'

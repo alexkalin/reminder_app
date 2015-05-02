@@ -1,6 +1,10 @@
-= link_to 'Add event', new_account_event_path
+- if current_user.over_limit?
+  .alert.alert-danger 
+    You are over your limit and update to create anymore events. Please upgrade to a higher plan.
 
-%table
+%p= link_to 'Add event', new_account_event_path, class: 'btn btn-primary', disabled: current_user.over_limit?
+
+%table.table.table-striped
   %tr
     %th Event
     %th Time
