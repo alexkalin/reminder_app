@@ -23,7 +23,7 @@
                 %span.sr-only (current)
           %ul.nav.navbar-nav.navbar-right
             - if current_user
-              %li= link_to current_user.email, '#'
+              %li= link_to current_user.email, account_edit_path
               %li= link_to 'Log Out', destroy_user_session_path, method: :delete
     .col-sm-12
       - if notice
