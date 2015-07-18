@@ -22,6 +22,7 @@
 #  last_sign_in_ip        :string(255)
 #  email_usage            :integer          default(0)
 #  sms_usage              :integer          default(0)
+#  customer_token         :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -40,8 +41,25 @@ class User < ActiveRecord::Base
     self.plan ||= Plan.find_by_name(:free)
   end
 
+  def customer
+    @customer ||= Stripe::Customer.retrieve(customer_token)
+  end
+
+  def customer_token
+    create_customer if super.blank?
+    super
+  end
+
+  def create_customer
+    self.update_attributes customer_token: Stripe::Customer.create.id
+  end
+
   def credit_cards
-    []
+    customer.sources
+  end
+
+  def subscriptions
+    customer.subscriptions
   end
 
   # This method determines whether the user is over the plan limit.
@@ -51,9 +69,15 @@ class User < ActiveRecord::Base
     self.plan.limit.to_i > 0 && self.sms_usage >= self.plan.limit
   end
 
+  # This method switches the users plan and charges the card if neccesrary.
   def switch_plan(plan)
     transaction do
-      # charge the user
+      subscriptions.each do |subscription|
+        subscription.delete
+      end
+
+      self.customer.subscriptions.create({:plan => plan.name})
+
       self.update_attributes plan: plan
     end
   end

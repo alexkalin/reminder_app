@@ -15,10 +15,23 @@ class CreditCard
     end
   end
 
-  def save
+  def save(current_user)
     return false unless self.valid?
-    return true
-
-    #add card
+    
+    begin
+      current_user.credit_cards.create(
+        source: {
+          object:     'card',
+          number:     number,
+          exp_month:  month,
+          exp_year:   year,
+          cvc:        cvv,
+          name:       name_on_card
+        }
+      )
+    rescue => e
+      self.errors.add(:number, e.message)
+      return false
+    end
   end
 end

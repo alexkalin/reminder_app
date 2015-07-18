@@ -35,4 +35,10 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  require "stripe"
+  Stripe.api_key = "sk_test_jLj7rD88VuhymM9uiXs567LU"
+  Stripe.api_version = "2015-06-15"
+
+  TWILIO_CLIENT = Twilio::REST::Client.new('AC25583cbb017621b6df0739b3130efd17', '0cff00001c7ecbcae22d98492235ec13')
 end
