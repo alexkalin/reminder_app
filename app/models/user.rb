@@ -7,7 +7,7 @@
 #  name                   :string(255)
 #  email                  :string(255)
 #  password               :string(255)
-#  number                 :string(255)
+#  mobile_number          :string(255)
 #  plan_id                :integer
 #  created_at             :datetime
 #  updated_at             :datetime
@@ -23,6 +23,7 @@
 #  email_usage            :integer          default(0)
 #  sms_usage              :integer          default(0)
 #  customer_token         :string(255)
+#  twilio_number          :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -34,6 +35,16 @@ class User < ActiveRecord::Base
   has_many :events
 
   validates :plan, presence: true
+
+  validate :mobile_number_set
+
+  def mobile_number_set
+    if self.plan.try(:has_sms?) && mobile_number.blank?
+      self.errors.add(:mobile_number, :blank)
+    end
+
+    self.errors.none?
+  end
 
   # @!group Callbacks
   
@@ -77,6 +88,28 @@ class User < ActiveRecord::Base
       end
 
       self.customer.subscriptions.create({:plan => plan.name})
+
+      
+    # if plan.has_sms?
+    #   if twilio_number.blank?
+    #     numbers = TWILIO_CLIENT.available_twilio_numbers.get('US').local.list
+    #     number = numbers.first.try(:twilio_number)
+
+    #     if number
+    #       TWILIO_CLIENT.account.incoming_twilio_numbers.create(twilio_number: number)
+    #       self.update_attributes twilio_number: number
+    #     else
+    #       return false
+    #     end
+    #   end
+    # else
+    #   unless twilio_number.blank?
+    #     numbers = TWILIO_CLIENT.account.incoming_twilio_numbers.list(twilio_number: twilio_number)
+    #     numbers.each do |incoming_number|
+    #       incoming_number.delete
+    #     end
+    #   end
+    # end
 
       self.update_attributes plan: plan
     end

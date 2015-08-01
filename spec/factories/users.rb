@@ -26,10 +26,11 @@
 #  twilio_number          :string(255)
 #
 
-require 'test_helper'
-
-class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+FactoryGirl.define do
+  factory :user do
+    name { Faker::Name.name }
+    email { Faker::Internet.email }
+    mobile_number { Faker::Number.number(10) }
+    plan
+  end
 end

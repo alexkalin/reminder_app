@@ -26,10 +26,17 @@
 #  twilio_number          :string(255)
 #
 
-require 'test_helper'
+describe User do
+  describe "creation" do
+    subject { FactoryGirl.build(:user) }
 
-class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+    describe "associations" do
+      it { is_expected.to belong_to :plan }
+      it { is_expected.to have_many :events }
+    end
+
+    describe "validations" do
+      it { is_expected.to validate_presence_of :plan } 
+    end
+  end
 end
